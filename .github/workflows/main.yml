@@ -51,7 +51,6 @@ jobs:
           cd backend-repo
           git fetch origin main
           git merge --no-commit --no-ff origin/main || echo "conflict" > merge_status.txt
-          cd ..
           
       - name: Handle Merge Conflicts
         if: ${{ failure() || (hashFiles('**/merge_status.txt') != '') }}
