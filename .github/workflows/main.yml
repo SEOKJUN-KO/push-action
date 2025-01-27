@@ -1,4 +1,4 @@
-name: Sync to Back-End Repository
+name: Sync to Back Repository
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
       - name: Replace Static Files
         run: |
           rm -rf backend-repo/dist
-          cp -R front-repo/사전 backend-repo/
+          cp -R front-repo/dist backend-repo/
           
       - name: Commit and Push Changes
         run: |
@@ -69,12 +69,19 @@ jobs:
         env:
           TEST_KEY: ${{ secrets.TEST_KEY }}
 
-      - name: Merge and Clean Up Branch
+      - name: Create Pull Request and Merge
         if: ${{ success() && hashFiles('**/merge_status.txt') == '' }}
         run: |
-          cd backend-repo
-          git checkout main
-          git merge autoBuild
-          git branch -d autoBuild
-          git push origin main
-          cd ..
+          echo "No conflicts detected. Creating Pull Request..."
+          gh pr create \
+            --base main \
+            --head autoBuild \
+            --title "New Build Files" \
+            --body "Automatically generated Pull Request for new build files."
+          
+          echo "Attempting to merge the Pull Request..."
+          PR_NUMBER=$(gh pr view --json number -q '.number')
+          gh pr merge $PR_NUMBER --merge --admin
+          echo "Pull Request #$PR_NUMBER successfully merged."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
