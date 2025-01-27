@@ -79,6 +79,7 @@ jobs:
           PR_NUMBER=$(gh pr view --json number -q '.number')
           gh pr merge $PR_NUMBER --merge --admin
           echo "Pull Request #$PR_NUMBER successfully merged."
+          git checkout main
           git branch -d $AUTO_BUILD_NAME
         env:
           GH_TOKEN: ${{ secrets.TEST_KEY }}
