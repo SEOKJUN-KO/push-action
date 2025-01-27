@@ -32,8 +32,8 @@ jobs:
 
       - name: Replace Static Files
         run: |
-          rm -rf backend-repo/dist
-          cp -R front-repo/사전 backend-repo/
+          rm -rf backend-repo/dist/asset
+          cp -R front-repo/사전 backend-repo/dist
           
       - name: Commit and Push Changes
         run: |
@@ -70,7 +70,7 @@ jobs:
             --head autoBuild \
             --title "New Build Files" \
             --body "Automatically generated Pull Request for new build files."
-          
+
           echo "Attempting to merge the Pull Request..."
           PR_NUMBER=$(gh pr view --json number -q '.number')
           gh pr merge $PR_NUMBER --merge --admin
