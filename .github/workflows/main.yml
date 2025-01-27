@@ -33,7 +33,7 @@ jobs:
       - name: Replace Static Files
         run: |
           rm -rf backend-repo/dist
-          cp -R front-repo/dist backend-repo/
+          cp -R front-repo/사전 backend-repo/
           
       - name: Commit and Push Changes
         run: |
