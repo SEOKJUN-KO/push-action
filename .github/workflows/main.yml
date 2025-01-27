@@ -65,6 +65,8 @@ jobs:
         if: ${{ success() && hashFiles('**/merge_status.txt') == '' }}
         run: |
           echo "No conflicts detected. Creating Pull Request..."
+          gh --version
+          
           gh pr create \
             --base main \
             --head autoBuild \
