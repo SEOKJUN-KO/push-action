@@ -77,4 +77,4 @@ jobs:
           gh pr merge $PR_NUMBER --merge --admin
           echo "Pull Request #$PR_NUMBER successfully merged."
         env:
-          TEST_KEY: ${{ secrets.TEST_KEY }}
+          GH_TOKEN: ${{ secrets.TEST_KEY }}
