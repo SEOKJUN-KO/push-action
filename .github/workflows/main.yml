@@ -22,16 +22,14 @@ jobs:
           ref: main
           path: backend-repo
 
-      - name: Move To Branch
-        run: |
-          cd backend-repo
-          git pull origin main
 
       - name: Set Branch name
         run: echo "AUTO_BUILD_NAME=autoBuild_${{ github.run_id }}_$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
 
-      - name: Build project
+      - name: Move To Branch
         run: |
+          cd backend-repo
+          git pull origin main
           git branch $AUTO_BUILD_NAME
           git checkout $AUTO_BUILD_NAME
 
