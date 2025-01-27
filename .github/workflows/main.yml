@@ -13,13 +13,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           path: front-repo
-
-      - name: Build 
-        run: |
-          cd front-repo
-          yarn install
-          yarn run build
-          cd ..
         
       - name: Download Back Repository
         uses: actions/checkout@v3
@@ -84,4 +77,4 @@ jobs:
           gh pr merge $PR_NUMBER --merge --admin
           echo "Pull Request #$PR_NUMBER successfully merged."
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEST_KEY: ${{ secrets.TEST_KEY }}
