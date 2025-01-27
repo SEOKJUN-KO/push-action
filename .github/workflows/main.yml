@@ -1,0 +1,80 @@
+name: Sync to Back-End Repository
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download code Front Repository
+        uses: actions/checkout@v3
+        with:
+          path: front-repo
+
+      - name: Build 
+        run: |
+          cd front-repo
+          yarn install
+          yarn run build
+          cd ..
+        
+      - name: Download Back Repository
+        uses: actions/checkout@v3
+        with:
+          repository: SEOKJUN-KO/ActionTest
+          token: ${{ secrets.TEST_KEY }}
+          ref: main
+          path: backend-repo
+
+      - name: Move To Branch
+        run: |
+          cd backend-repo
+          git pull origin main
+          git branch autoBuild
+          git checkout autoBuild
+          cd ..
+
+      - name: Replace Static Files
+        run: |
+          rm -rf backend-repo/dist
+          cp -R front-repo/사전 backend-repo/
+          
+      - name: Commit and Push Changes
+        run: |
+          cd backend-repo
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "tjrwns1021@gmail.com"
+          git add .
+          git commit -m "Update dist folder with latest build"
+          git push --set-upstream origin autoBuild
+        env:
+          TEST_KEY: ${{ secrets.TEST_KEY }}
+
+      - name: Check for Merge Conflicts
+        run: |
+          cd backend-repo
+          git fetch origin main
+          git merge --no-commit --no-ff origin/main || echo "conflict" > merge_status.txt
+          cd ..
+          
+      - name: Handle Merge Conflicts
+        if: ${{ failure() || (hashFiles('**/merge_status.txt') != '') }}
+        run: |
+          echo "Merge conflict detected. Sending alert..."
+          # 알림을 이메일로 보내거나 원하는 방식으로 추가 처리 가능
+          # 예: echo "Merge conflict occurred" | mail -s "GitHub Action Alert" example@mail.com
+        env:
+          TEST_KEY: ${{ secrets.TEST_KEY }}
+
+      - name: Merge and Clean Up Branch
+        if: ${{ success() && hashFiles('**/merge_status.txt') == '' }}
+        run: |
+          cd backend-repo
+          git checkout main
+          git merge autoBuild
+          git branch -d autoBuild
+          git push origin main
+          cd ..
