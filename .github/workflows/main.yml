@@ -26,6 +26,13 @@ jobs:
         run: |
           cd backend-repo
           git pull origin main
+
+          # autoBuild 브랜치가 존재하는지 확인
+          if git branch --list autoBuild; then
+            echo "autoBuild 브랜치가 이미 존재합니다. 작업을 중단합니다."
+            exit 1 # 작업 중단
+          fi
+          
           git branch autoBuild
           git checkout autoBuild
           cd ..
@@ -76,5 +83,6 @@ jobs:
           PR_NUMBER=$(gh pr view --json number -q '.number')
           gh pr merge $PR_NUMBER --merge --admin
           echo "Pull Request #$PR_NUMBER successfully merged."
+          git branch -d autoBuild
         env:
           GH_TOKEN: ${{ secrets.TEST_KEY }}
