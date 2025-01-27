@@ -66,13 +66,13 @@ jobs:
         run: |
           echo "No conflicts detected. Creating Pull Request..."
           gh --version
-          
+          ls -al
           gh pr create \
             --base main \
             --head autoBuild \
             --title "New Build Files" \
             --body "Automatically generated Pull Request for new build files."
-
+          
           echo "Attempting to merge the Pull Request..."
           PR_NUMBER=$(gh pr view --json number -q '.number')
           gh pr merge $PR_NUMBER --merge --admin
