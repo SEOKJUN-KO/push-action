@@ -64,9 +64,8 @@ jobs:
       - name: Create Pull Request and Merge
         if: ${{ success() && hashFiles('**/merge_status.txt') == '' }}
         run: |
+          cd backend-repo
           echo "No conflicts detected. Creating Pull Request..."
-          gh --version
-          ls -al
           gh pr create \
             --base main \
             --head autoBuild \
