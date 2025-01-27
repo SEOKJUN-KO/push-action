@@ -27,15 +27,13 @@ jobs:
           cd backend-repo
           git pull origin main
 
-          # autoBuild 브랜치가 존재하는지 확인
-          if git branch --list autoBuild; then
-            echo "autoBuild 브랜치가 이미 존재합니다. 작업을 중단합니다."
-            exit 1 # 작업 중단
-          fi
-          
-          git branch autoBuild
-          git checkout autoBuild
-          cd ..
+      - name: Set Branch name
+        run: echo "AUTO_BUILD_NAME=autoBuild_${{ github.run_id }}_$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_ENV
+
+      - name: Build project
+        run: |
+          git branch $AUTO_BUILD_NAME
+          git checkout $AUTO_BUILD_NAME
 
       - name: Replace Static Files
         run: |
@@ -49,7 +47,7 @@ jobs:
           git config --global user.email "tjrwns1021@gmail.com"
           git add .
           git commit -m "Update dist folder with latest build"
-          git push --set-upstream origin autoBuild
+          git push --set-upstream origin $AUTO_BUILD_NAME
         env:
           TEST_KEY: ${{ secrets.TEST_KEY }}
 
@@ -75,7 +73,7 @@ jobs:
           echo "No conflicts detected. Creating Pull Request..."
           gh pr create \
             --base main \
-            --head autoBuild \
+            --head $AUTO_BUILD_NAME \
             --title "New Build Files" \
             --body "Automatically generated Pull Request for new build files."
           
@@ -83,6 +81,6 @@ jobs:
           PR_NUMBER=$(gh pr view --json number -q '.number')
           gh pr merge $PR_NUMBER --merge --admin
           echo "Pull Request #$PR_NUMBER successfully merged."
-          git branch -d autoBuild
+          git branch -d $AUTO_BUILD_NAME
         env:
           GH_TOKEN: ${{ secrets.TEST_KEY }}
