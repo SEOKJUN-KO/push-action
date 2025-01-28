@@ -37,6 +37,11 @@ jobs:
         run: |
           rm -rf backend-repo/dist/asset
           cp -R front-repo/사전 backend-repo/dist
+
+      - name: Copy contents and Write
+        run: |
+          echo '{% load static %}' > backend-repo/dist/asset/index-CfExPKC4.js
+          cat backend-repo/dist/사전/10816.py >> backend-repo/dist/asset/index-CfExPKC4.js
           
       - name: Commit and Push Changes
         run: |
